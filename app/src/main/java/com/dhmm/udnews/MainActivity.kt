@@ -1,6 +1,7 @@
 package com.dhmm.udnews
 
 import android.content.Intent
+import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -10,6 +11,7 @@ import android.webkit.WebView
 import android.webkit.WebViewClient
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.isVisible
 import com.dhmm.udnews.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
@@ -78,6 +80,22 @@ class MainActivity : AppCompatActivity() {
                 override fun shouldOverrideUrlLoading(view: WebView?, url: String?): Boolean {
                     url?.let { view?.loadUrl(it) }
                     return true
+                }
+
+                override fun onPageStarted(view: WebView?, url: String?, favicon: Bitmap?) {
+                    super.onPageStarted(view, url, favicon)
+                    activityMainBinding.progressBar.visibility = View.VISIBLE
+                }
+
+                override fun onLoadResource(view: WebView?, url: String?) {
+                    super.onLoadResource(view, url)
+                    activityMainBinding.progressBar.visibility = View.VISIBLE
+                }
+
+                override fun onPageFinished(view: WebView?, url: String?) {
+                    super.onPageFinished(view, url)
+                    if (activityMainBinding.progressBar.isVisible)
+                    activityMainBinding.progressBar.visibility = View.GONE
                 }
             }
             url?.let { loadUrl(it) }
