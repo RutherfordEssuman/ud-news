@@ -6,13 +6,12 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.view.View
-import android.webkit.WebSettings
-import android.webkit.WebView
-import android.webkit.WebViewClient
+import android.webkit.*
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import com.dhmm.udnews.databinding.ActivityMainBinding
+
 
 class MainActivity : AppCompatActivity() {
     private lateinit var activityMainBinding: ActivityMainBinding
@@ -76,9 +75,21 @@ class MainActivity : AppCompatActivity() {
             fitsSystemWindows = true
             setLayerType(View.LAYER_TYPE_HARDWARE, null)
 
+            webChromeClient = object : WebChromeClient() {
+                override fun onProgressChanged(view: WebView, progress: Int) {
+                    activityMainBinding.progressBar.progress = progress
+//                    if (progress == 100) activity.setTitle(R.string.app_name)
+                }
+            }
+
             webViewClient = object : WebViewClient() {
                 override fun shouldOverrideUrlLoading(view: WebView?, url: String?): Boolean {
-                    url?.let { view?.loadUrl(it) }
+                    if (url?.contains("udnews.org") == true) {
+                        url.let { view?.loadUrl(it) }
+                    } else {
+                        val i = Intent(Intent.ACTION_VIEW, Uri.parse(url))
+                        startActivity(i)
+                    }
                     return true
                 }
 
@@ -89,13 +100,21 @@ class MainActivity : AppCompatActivity() {
 
                 override fun onLoadResource(view: WebView?, url: String?) {
                     super.onLoadResource(view, url)
-                    activityMainBinding.progressBar.visibility = View.VISIBLE
+//                    activityMainBinding.progressBar.visibility = View.VISIBLE
                 }
 
                 override fun onPageFinished(view: WebView?, url: String?) {
                     super.onPageFinished(view, url)
                     if (activityMainBinding.progressBar.isVisible)
-                    activityMainBinding.progressBar.visibility = View.GONE
+                        activityMainBinding.progressBar.visibility = View.GONE
+                }
+
+                override fun onReceivedError(
+                    view: WebView?,
+                    request: WebResourceRequest?,
+                    error: WebResourceError?
+                ) {
+                    super.onReceivedError(view, request, error)
                 }
             }
             url?.let { loadUrl(it) }
