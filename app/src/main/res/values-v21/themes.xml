@@ -1,3 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+
+    <style name="ProgressBarTheme" parent="ThemeOverlay.AppCompat">
+<!--        <item name="colorAccent">@color/white</item>-->
+        <item name="android:progressBackgroundTint">@color/ud_red</item>
+        <item name="android:progressTint">@color/white</item>
+    </style>
 </resources>
